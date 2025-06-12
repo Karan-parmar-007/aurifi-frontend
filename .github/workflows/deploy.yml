@@ -12,6 +12,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: npm run build
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -36,11 +48,26 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}  # Add this line
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd /opt/aurifi
+          
+          echo "🔄 Pulling latest frontend image..."
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/aurifi-frontend:latest
-          docker compose stop frontend
-          docker compose up -d frontend
+          
+          echo "🔄 Updating frontend service..."
+          docker compose up -d --no-deps frontend
+          
+          echo "⏳ Waiting for frontend to be ready..."
+          sleep 15
+          
+          echo "🔄 Restarting nginx to refresh connections..."
+          docker compose restart nginx
+          
+          echo "🧹 Cleaning up old images..."
           docker image prune -f
+          
+          echo "📊 Checking service status..."
+          docker compose ps
+          
           echo "✅ Frontend deployed successfully!"
