@@ -40,7 +40,7 @@
 					class:text-black={isTransactionsActive}
 					class:text-[#0000005e]={!isTransactionsActive}
 				>
-					My ci/cd
+					My Transactions
 				</h1>
 			</a>
 			<a href="/Transactions/Archive">
