@@ -2,7 +2,7 @@ FROM node:20.11.1-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package file
 COPY package*.json ./
 
 # Install dependencies
