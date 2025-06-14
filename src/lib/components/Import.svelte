@@ -79,7 +79,7 @@
 			formData.append('name', project_name);
 			formData.append('user_id', user_id);
 
-			const response = await fetch(`${VITE_API_URL}/transaction/get_all_transactions/${user_id}`, {
+			const response = await fetch(`${VITE_API_URL}/project/upload_dataset/${user_id}`, {
 				method: 'POST',
 				body: formData
 			});
