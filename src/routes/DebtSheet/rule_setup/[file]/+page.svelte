@@ -259,7 +259,7 @@
 				}
 			});
 			console.log('Submitting rules:', formattedData);
-			const response = await fetch('${VITE_API_URL}/dataset/apply_rules', {
+			const response = await fetch(`${VITE_API_URL}/dataset/apply_rules`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
