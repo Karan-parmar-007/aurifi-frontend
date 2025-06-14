@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Card, Button, Dropzone } from 'flowbite-svelte';
 	import { modal } from '../../store/toogleModal.svelte';
-	import { user_id } from '$lib/constants';
+	import { user_id, VITE_API_URL } from '$lib/constants';
 	import { goto } from '$app/navigation';
 
 	let { fetchFiles = () => {} } = $props();
@@ -79,7 +79,7 @@
 			formData.append('name', project_name);
 			formData.append('user_id', user_id);
 
-			const response = await fetch('/api/files', {
+			const response = await fetch(`${VITE_API_URL}/transaction/get_all_transactions/${user_id}`, {
 				method: 'POST',
 				body: formData
 			});
