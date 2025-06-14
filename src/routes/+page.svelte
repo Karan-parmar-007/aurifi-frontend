@@ -16,7 +16,7 @@
 		DropdownItem
 	} from 'flowbite-svelte';
 	import { browser } from '$app/environment';
-	import { VITE_API_URL } from '$lib/constants';
+	import { user_id, VITE_API_URL } from '$lib/constants';
 
 	let { data } = $props();
 	let files = $derived(data.files);
@@ -39,7 +39,7 @@
 	const fetchFiles = async () => {
 		try {
 			loading = true;
-			const response = await fetch(`api/files`);
+			const response = await fetch(`${VITE_API_URL}/project/get_projects/${user_id}`);
 			if (!response.ok) {
 				console.log('response not ok! ', response);
 				files = [];
