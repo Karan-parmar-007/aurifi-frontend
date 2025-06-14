@@ -71,14 +71,52 @@
 		return formatedDate;
 	};
 
-	const downloadFile = (filepath: string, name: string) => {
-		const downloadUrl = `${VITE_API_URL}/project/download_file/${filepath}`;
-		console.log(downloadUrl);
-		const a = document.createElement('a');
-		a.href = downloadUrl;
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
+	const downloadFile = async (file_path: string) => {
+		try {
+			// Use query parameter instead of path parameter
+			const downloadUrl = `${VITE_API_URL}/project/download_file?file_path=${encodeURIComponent(file_path)}`;
+			console.log('Download URL:', downloadUrl);
+			
+			// Fetch the file with proper headers
+			const response = await fetch(downloadUrl, {
+				method: 'GET',
+				headers: {
+					// Add any authentication headers if needed
+					// 'Authorization': `Bearer ${token}`
+				}
+			});
+
+			if (!response.ok) {
+				throw new Error(`Download failed: ${response.statusText}`);
+			}
+
+			// Create blob from response
+			const blob = await response.blob();
+			
+			// Create temporary URL for the blob
+			const blobUrl = window.URL.createObjectURL(blob);
+			
+			// Extract filename from path or use default
+			const filename = file_path.split('/').pop() || 'download.xlsx';
+			
+			// Create temporary anchor element and trigger download
+			const a = document.createElement('a');
+			a.href = blobUrl;
+			a.download = filename;
+			a.style.display = 'none';
+			document.body.appendChild(a);
+			a.click();
+			
+			// Cleanup
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(blobUrl);
+			
+			console.log('Download completed successfully');
+		} catch (error) {
+			console.error('Error downloading file:', error);
+			// You might want to show a toast/notification to the user here
+			alert('Failed to download file. Please try again.');
+		}
 	};
 
 	const startRenameFile = (file) => {

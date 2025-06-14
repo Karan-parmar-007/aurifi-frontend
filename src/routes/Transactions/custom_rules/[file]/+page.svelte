@@ -94,32 +94,41 @@
 	async function downloadFile(filePath: string, fileName: string) {
 		try {
 			isloading = true;
-			// Encode the file path to handle special characters
-			const encodedFilePath = encodeURIComponent(filePath);
-			const response = await fetch(`${VITE_API_URL}/project/download_file/${encodedFilePath}`, {
+			
+			// Use query parameter instead of path parameter
+			const downloadUrl = `${VITE_API_URL}/project/download_file?file_path=${encodeURIComponent(filePath)}`;
+			
+			const response = await fetch(downloadUrl, {
 				method: 'GET',
 				headers: {
-					Accept: 'application/octet-stream'
+					'Accept': 'application/octet-stream'
+					// Add any authentication headers if needed
+					// 'Authorization': `Bearer ${token}`
 				}
 			});
 
 			if (!response.ok) {
-				throw new Error(`Failed to download file: ${response.statusText}`);
+				const errorData = await response.json().catch(() => ({}));
+				throw new Error(errorData.message || `Failed to download file: ${response.statusText}`);
 			}
 
 			const blob = await response.blob();
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = url;
-			// Use the file name from the file_path or a fallback
-			a.download = fileName || 'downloaded_file.xlsx';
+			a.download = fileName || filePath.split('/').pop() || 'downloaded_file.xlsx';
+			a.style.display = 'none';
 			document.body.appendChild(a);
 			a.click();
-			a.remove();
+			
+			// Clean up
+			document.body.removeChild(a);
 			window.URL.revokeObjectURL(url);
+			
+			console.log(`Successfully downloaded: ${fileName || filePath}`);
 		} catch (error) {
 			console.error('Download error:', error);
-			alert('Failed to download the file. Please try again.');
+			alert(`Failed to download the file: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		} finally {
 			isloading = false;
 		}

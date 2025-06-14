@@ -267,7 +267,7 @@
 										<TableBodyCell>
 											{#if apiResponseData.file_info?.file_path}
 												<a
-													href={`${VITE_API_URL}/project/download_file/${encodeURIComponent(apiResponseData.file_info.file_path)}`}
+													href={`${VITE_API_URL}/project/download_file?file_path=${encodeURIComponent(apiResponseData.file_info.file_path)}`}
 													download
 													class="flex cursor-pointer gap-2 text-[#0161DB]"
 												>
